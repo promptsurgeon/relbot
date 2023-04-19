@@ -10,7 +10,7 @@ from torch.utils.data import Dataset
 from transformers import DistilBertConfig
 from transformers.models.distilbert.modeling_distilbert import DistilBertPreTrainedModel, DistilBertModel
 
-from transformers import DefaultFlowCallback
+from transformers import DefaultFlowCallback, ProgressCallback, PrinterCallback
 
 
 class SocialMediaDataset(Dataset):
@@ -113,10 +113,8 @@ train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=8)
 
 
-
-
-# Create a list of default callbacks without TensorBoardCallback
-default_callbacks = [callback for callback in DefaultFlowCallback.get_callbacks() if callback.__name__ != "TensorBoardCallback"]
+# Create a list of callbacks without TensorBoardCallback
+default_callbacks = [ProgressCallback, PrinterCallback]
 
 training_args = TrainingArguments(
     output_dir='./results',
@@ -145,6 +143,3 @@ trainer = Trainer(
 
 trainer.train()
 trainer.evaluate()
-
-
-
