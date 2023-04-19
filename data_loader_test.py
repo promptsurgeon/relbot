@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import pandas as pd
 from transformers import DistilBertTokenizerFast, DistilBertModel
 import numpy as np
@@ -64,7 +66,7 @@ sample_dataset = SocialMediaDataset(sample_df, tokenizer)
 for i in range(len(sample_dataset)):
     inputs = sample_dataset[i]
     print(f"Sample {i + 1}:")
-    print(f"  Averaged Embeddings: {inputs['input_ids'].shape}")
+    print(f"  Averaged Embeddings: {inputs['input_embeddings'].shape}")
     print(f"  Label: {inputs['labels']}\n")
 
 
