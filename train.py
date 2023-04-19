@@ -10,6 +10,8 @@ from torch.utils.data import Dataset
 from transformers import DistilBertConfig
 from transformers.models.distilbert.modeling_distilbert import DistilBertPreTrainedModel, DistilBertModel
 
+from transformers import DefaultFlowCallback
+
 
 class SocialMediaDataset(Dataset):
     def __init__(self, dataframe, tokenizer, max_length=8500, chunk_size=256, overlap=64):
@@ -99,8 +101,8 @@ config = DistilBertConfig.from_pretrained('distilbert-base-uncased', num_labels=
 model = CustomDistilBertForSequenceClassification.from_pretrained('distilbert-base-uncased', config=config)
 
 
-train_df = pd.read_csv('path/to/train.csv')
-test_df = pd.read_csv('path/to/test.csv')
+train_df = pd.read_csv('/vol/research/chiron/trans4/train_2.csv')
+test_df = pd.read_csv('/vol/research/chiron/trans4/test.csv')
 
 
 
@@ -111,18 +113,25 @@ train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=8)
 
 
+
+
+# Create a list of default callbacks without TensorBoardCallback
+default_callbacks = [callback for callback in DefaultFlowCallback.get_callbacks() if callback.__name__ != "TensorBoardCallback"]
+
 training_args = TrainingArguments(
     output_dir='./results',
     num_train_epochs=3,
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
+    per_device_train_batch_size=16,
+    per_device_eval_batch_size=16,
     warmup_steps=500,
     weight_decay=0.01,
     logging_dir='./logs',
     logging_steps=10,
     evaluation_strategy='epoch',
+    save_strategy='epoch',
     load_best_model_at_end=True,
-    metric_for_best_model='recall',  # We want to maximize recall
+    metric_for_best_model='recall',
+    report_to=["wandb"],  # If you want to use other reporting tools like Weights & Biases, add them here
 )
 
 trainer = Trainer(
@@ -131,9 +140,11 @@ trainer = Trainer(
     train_dataset=train_dataset,
     eval_dataset=test_dataset,
     compute_metrics=compute_metrics,
+    callbacks=default_callbacks  # Pass the updated list of callbacks to the Trainer
 )
-
-
 
 trainer.train()
 trainer.evaluate()
+
+
+
