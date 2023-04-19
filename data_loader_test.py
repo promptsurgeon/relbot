@@ -2,6 +2,7 @@ import pandas as pd
 from transformers import DistilBertTokenizerFast, DistilBertModel
 import numpy as np
 import torch 
+from torch.utils.data import Dataset
 
 class SocialMediaDataset(Dataset):
     def __init__(self, dataframe, tokenizer, max_length=512, chunk_size=256, overlap=64):
