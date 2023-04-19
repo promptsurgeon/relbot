@@ -112,7 +112,6 @@ test_loader = DataLoader(test_dataset, batch_size=8)
 
 
 training_args = TrainingArguments(
-    device=torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
     output_dir='./results',
     num_train_epochs=3,
     per_device_train_batch_size=8,
